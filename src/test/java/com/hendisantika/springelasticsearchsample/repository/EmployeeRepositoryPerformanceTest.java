@@ -1,8 +1,14 @@
 package com.hendisantika.springelasticsearchsample.repository;
 
 import com.carrotsearch.junitbenchmarks.AbstractBenchmark;
+import com.carrotsearch.junitbenchmarks.BenchmarkOptions;
 import com.carrotsearch.junitbenchmarks.BenchmarkRule;
+import com.hendisantika.springelasticsearchsample.domain.Department;
+import com.hendisantika.springelasticsearchsample.domain.Employee;
+import com.hendisantika.springelasticsearchsample.domain.Organization;
+import org.junit.Assert;
 import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,4 +34,18 @@ public class EmployeeRepositoryPerformanceTest extends AbstractBenchmark {
 
     private TestRestTemplate template = new TestRestTemplate();
     private Random r = new Random();
+
+    @Test
+    @BenchmarkOptions(concurrency = 30, benchmarkRounds = 500, warmupRounds = 2)
+    public void addTest() {
+        Employee employee = new Employee();
+        employee.setName("John Smith");
+        employee.setAge(r.nextInt(100));
+        employee.setPosition("Developer");
+        employee.setDepartment(new Department((long) r.nextInt(1000), "TestD"));
+        employee.setOrganization(new Organization((long) r.nextInt(100), "TestO", "Test Street No. 1"));
+        employee = template.postForObject("http://localhost:8080/employees", employee, Employee.class);
+        Assert.assertNotNull(employee);
+        Assert.assertNotNull(employee.getId());
+    }
 }
