@@ -61,4 +61,10 @@ class EmployeeRepositoryTest {
         List<Employee> employees = repository.findByOrganizationName("TestO");
         Assert.assertTrue(employees.size() > 0);
     }
+
+    @Test
+    public void testFindByName() {
+        List<Employee> employees = repository.findByName("Uzumaki Naruto");
+        Assert.assertTrue(employees.size() > 0);
+    }
 }
