@@ -48,4 +48,13 @@ public class EmployeeRepositoryPerformanceTest extends AbstractBenchmark {
         Assert.assertNotNull(employee);
         Assert.assertNotNull(employee.getId());
     }
+
+    @Test
+    @BenchmarkOptions(concurrency = 30, benchmarkRounds = 500, warmupRounds = 2)
+    public void findByNameTest() {
+        String name = "JohnSmith" + r.nextInt(1000000);
+        Employee[] employees = template.getForObject("http://localhost:8080/employees/{name}", Employee[].class, name);
+        LOGGER.info("Found: {}", employees.length);
+        Assert.assertNotNull(employees);
+    }
 }
