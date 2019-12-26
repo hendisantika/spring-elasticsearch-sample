@@ -1,7 +1,9 @@
 package com.hendisantika.springelasticsearchsample.init;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hendisantika.springelasticsearchsample.domain.Department;
 import com.hendisantika.springelasticsearchsample.domain.Employee;
+import com.hendisantika.springelasticsearchsample.domain.Organization;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

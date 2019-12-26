@@ -1,8 +1,6 @@
 package com.hendisantika.springelasticsearchsample.domain;
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -17,6 +15,8 @@ import lombok.Setter;
 @Data
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Department {
     private Long id;
     private String name;
