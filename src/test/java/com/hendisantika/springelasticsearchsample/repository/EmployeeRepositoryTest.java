@@ -11,6 +11,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 
+import java.util.List;
+
 /**
  * Created by IntelliJ IDEA.
  * Project : spring-elasticsearch-sample
@@ -52,5 +54,11 @@ class EmployeeRepositoryTest {
     public void testFindAll() {
         Iterable<Employee> employees = repository.findAll();
         Assert.assertTrue(employees.iterator().hasNext());
+    }
+
+    @Test
+    public void testFindByOrganization() {
+        List<Employee> employees = repository.findByOrganizationName("TestO");
+        Assert.assertTrue(employees.size() > 0);
     }
 }
