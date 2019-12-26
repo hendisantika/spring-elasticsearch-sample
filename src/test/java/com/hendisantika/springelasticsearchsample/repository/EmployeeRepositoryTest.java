@@ -47,4 +47,10 @@ class EmployeeRepositoryTest {
         Assert.assertNotNull(employee);
         Assert.assertNotNull(employee.getId());
     }
+
+    @Test
+    public void testFindAll() {
+        Iterable<Employee> employees = repository.findAll();
+        Assert.assertTrue(employees.iterator().hasNext());
+    }
 }
