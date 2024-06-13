@@ -24,3 +24,9 @@ elasticsearch.username: elastic
 elasticsearch.password: changeme
 elasticsearch.server.url: http://localhost:9200
 elasticsearch.api.key: ekVWTUVwQUJCN1AzWDVodFVPclY6MjBkTWhZUXNUbXFwa0xRQjJ0WjVpdw==
+
+springdoc:
+  api-docs.path: /v3/api-doc
+  swagger-ui.path: /swagger-ui
+application-description: '@project.description@'
+application-version: '@project.version@'
