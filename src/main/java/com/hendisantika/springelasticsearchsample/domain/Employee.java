@@ -19,7 +19,7 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
  * Date: 27/12/19
  * Time: 06.25
  */
-@Document(indexName = "employee")
+@Document(indexName = "employees")
 @Data
 @Setter
 @Getter
