@@ -19,3 +19,8 @@ spring:
 initial-import:
   enabled: false
 
+elasticsearch.host: localhost:9300
+elasticsearch.username: elastic
+elasticsearch.password: changeme
+elasticsearch.server.url: http://localhost:9200
+elasticsearch.api.key: ekVWTUVwQUJCN1AzWDVodFVPclY6MjBkTWhZUXNUbXFwa0xRQjJ0WjVpdw==
