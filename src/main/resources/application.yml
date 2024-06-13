@@ -19,7 +19,7 @@ spring:
 initial-import:
   enabled: false
 
-elasticsearch.host: localhost:9300
+elasticsearch.host: localhost:9200
 elasticsearch.username: elastic
 elasticsearch.password: changeme
 elasticsearch.server.url: http://localhost:9200

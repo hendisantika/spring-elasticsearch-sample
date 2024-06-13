@@ -3,8 +3,13 @@ package com.hendisantika.springelasticsearchsample.init;
 import com.hendisantika.springelasticsearchsample.domain.Department;
 import com.hendisantika.springelasticsearchsample.domain.Employee;
 import com.hendisantika.springelasticsearchsample.domain.Organization;
+import com.hendisantika.springelasticsearchsample.repository.EmployeeRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,10 +24,12 @@ import java.util.Random;
  * Date: 27/12/19
  * Time: 06.27
  */
+@Slf4j
+@Component
 public class SampleDataSet {
     private static final Logger LOGGER = LoggerFactory.getLogger(SampleDataSet.class);
     private static final String INDEX_NAME = "sample";
-    private static final String INDEX_TYPE = "employee";
+    private static final String INDEX_TYPE = "employees";
     private static final int COUNTER = 0;
 
 //    @Autowired
@@ -92,6 +99,14 @@ public class SampleDataSet {
             employees.add(employee);
         }
         return employees;
+    }
+
+    @Bean
+    public CommandLineRunner initDatabase(EmployeeRepository employeeRepository) {
+        return args -> {
+            employeeRepository.saveAll(employees());
+            log.info("Employee data saved");
+        };
     }
 
 }
