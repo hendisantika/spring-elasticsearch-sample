@@ -1,7 +1,7 @@
 package com.hendisantika.springelasticsearchsample.repository;
 
 import com.hendisantika.springelasticsearchsample.domain.Employee;
-import org.springframework.data.elasticsearch.repository.ElasticsearchCrudRepository;
+import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.List;
  * Time: 06.26
  */
 @Repository
-public interface EmployeeRepository extends ElasticsearchCrudRepository<Employee, Long> {
+public interface EmployeeRepository extends ElasticsearchRepository<Employee, Long> {
     List<Employee> findByOrganizationName(String name);
 
     List<Employee> findByName(String name);

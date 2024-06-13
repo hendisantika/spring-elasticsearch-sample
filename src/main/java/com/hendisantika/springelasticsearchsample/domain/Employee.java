@@ -1,7 +1,9 @@
 package com.hendisantika.springelasticsearchsample.domain;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
@@ -17,10 +19,12 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
  * Date: 27/12/19
  * Time: 06.25
  */
-@Document(indexName = "sample", type = "employee")
+@Document(indexName = "employee")
 @Data
 @Setter
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Employee {
     @Id
     private String id;
