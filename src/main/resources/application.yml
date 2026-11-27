@@ -17,7 +17,7 @@ spring:
       password: changeme
 
 initial-import:
-  enabled: false
+  enabled: true
 
 elasticsearch.host: localhost:9200
 elasticsearch.username: elastic

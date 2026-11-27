@@ -16,7 +16,7 @@ import java.util.List;
  * Time: 06.26
  */
 @Repository
-public interface EmployeeRepository extends ElasticsearchRepository<Employee, Long> {
+public interface EmployeeRepository extends ElasticsearchRepository<Employee, String> {
     List<Employee> findByOrganizationName(String name);
 
     List<Employee> findByName(String name);

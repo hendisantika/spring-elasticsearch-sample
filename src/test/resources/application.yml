@@ -1,14 +1,19 @@
 spring:
   application:
     name: spring-elasticsearch-sample
-  data:
-    elasticsearch:
-      cluster-name: docker-cluster
-      cluster-nodes: 192.168.99.100:9300
 
-  elasticsearch:
-    rest:
-      uris: http://192.168.99.100:9200
-
+# Do not import the 10.000 sample employees during tests
 initial-import:
   enabled: false
+
+# elasticsearch.host is provided dynamically by Testcontainers (see AbstractElasticsearchContainerTest)
+elasticsearch.host: localhost:9200
+elasticsearch.username: elastic
+elasticsearch.password: changeme
+elasticsearch.server.url: http://localhost:9200
+
+springdoc:
+  api-docs.path: /v3/api-doc
+  swagger-ui.path: /swagger-ui
+application-description: '@project.description@'
+application-version: '@project.version@'

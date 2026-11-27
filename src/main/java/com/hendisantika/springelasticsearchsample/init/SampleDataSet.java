@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
@@ -26,6 +27,7 @@ import java.util.Random;
  */
 @Slf4j
 @Component
+@ConditionalOnProperty(name = "initial-import.enabled", havingValue = "true", matchIfMissing = true)
 public class SampleDataSet {
     private static final Logger LOGGER = LoggerFactory.getLogger(SampleDataSet.class);
     private static final String INDEX_NAME = "sample";

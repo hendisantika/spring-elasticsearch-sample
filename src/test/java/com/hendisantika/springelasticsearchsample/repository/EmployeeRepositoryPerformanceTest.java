@@ -1,20 +1,25 @@
 package com.hendisantika.springelasticsearchsample.repository;
 
-import com.carrotsearch.junitbenchmarks.AbstractBenchmark;
-import com.carrotsearch.junitbenchmarks.BenchmarkOptions;
-import com.carrotsearch.junitbenchmarks.BenchmarkRule;
+import com.hendisantika.springelasticsearchsample.AbstractElasticsearchContainerTest;
 import com.hendisantika.springelasticsearchsample.domain.Department;
 import com.hendisantika.springelasticsearchsample.domain.Employee;
 import com.hendisantika.springelasticsearchsample.domain.Organization;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestRule;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.web.client.RestClient;
 
-import java.util.Random;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadLocalRandom;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Created by IntelliJ IDEA.
@@ -24,46 +29,75 @@ import java.util.Random;
  * Telegram : @hendisantika34
  * Date: 27/12/19
  * Time: 06.37
+ * <p>
+ * Lightweight concurrent load test of the REST API (replacement for the JUnit 4 based junit-benchmarks test).
  */
-public class EmployeeRepositoryPerformanceTest extends AbstractBenchmark {
+class EmployeeRepositoryPerformanceTest extends AbstractElasticsearchContainerTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EmployeeRepositoryPerformanceTest.class);
+    private static final int CONCURRENCY = 10;
+    private static final int ROUNDS = 50;
 
-    @Rule
-    public TestRule benchmarkRun = new BenchmarkRule();
+    @LocalServerPort
+    private int port;
 
-    private TestRestTemplate template = new TestRestTemplate();
-    private Random r = new Random();
+    private RestClient client;
 
-    @Test
-    @BenchmarkOptions(concurrency = 30, benchmarkRounds = 500, warmupRounds = 2)
-    public void addTest() {
-        Employee employee = new Employee();
-        employee.setName("John Smith");
-        employee.setAge(r.nextInt(100));
-        employee.setPosition("Developer");
-        employee.setDepartment(new Department((long) r.nextInt(1000), "TestD"));
-        employee.setOrganization(new Organization((long) r.nextInt(100), "TestO", "Test Street No. 1"));
-        employee = template.postForObject("http://localhost:8080/employees", employee, Employee.class);
-        Assert.assertNotNull(employee);
-        Assert.assertNotNull(employee.getId());
+    @BeforeEach
+    void setUp() {
+        client = RestClient.create("http://localhost:" + port);
     }
 
     @Test
-    @BenchmarkOptions(concurrency = 30, benchmarkRounds = 500, warmupRounds = 2)
-    public void findByNameTest() {
-        String name = "JohnSmith" + r.nextInt(1000000);
-        Employee[] employees = template.getForObject("http://localhost:8080/employees/{name}", Employee[].class, name);
-        LOGGER.info("Found: {}", employees.length);
-        Assert.assertNotNull(employees);
+    void addTest() throws Exception {
+        List<Employee> results = runConcurrently(() -> {
+            ThreadLocalRandom r = ThreadLocalRandom.current();
+            Employee employee = new Employee();
+            employee.setName("John Smith");
+            employee.setAge(r.nextInt(100));
+            employee.setPosition("Developer");
+            employee.setDepartment(new Department((long) r.nextInt(1000), "TestD"));
+            employee.setOrganization(new Organization((long) r.nextInt(100), "TestO", "Test Street No. 1"));
+            return client.post().uri("/employees").body(employee).retrieve().body(Employee.class);
+        });
+
+        assertThat(results).hasSize(ROUNDS).allSatisfy(e -> assertThat(e.getId()).isNotBlank());
     }
 
     @Test
-    @BenchmarkOptions(concurrency = 30, benchmarkRounds = 500, warmupRounds = 2)
-    public void findByOrganizationNameTest() {
-        String organizationName = "TestO" + r.nextInt(5000);
-        Employee[] employees = template.getForObject("http://localhost:8080/employees/organization/{organizationName}", Employee[].class, organizationName);
-        LOGGER.info("Found: {}", employees.length);
-        Assert.assertNotNull(employees);
+    void findByNameTest() throws Exception {
+        List<Employee[]> results = runConcurrently(() -> client.get()
+                .uri("/employees/{name}", "JohnSmith" + ThreadLocalRandom.current().nextInt(1_000_000))
+                .retrieve()
+                .body(Employee[].class));
+
+        assertThat(results).hasSize(ROUNDS).doesNotContainNull();
+    }
+
+    @Test
+    void findByOrganizationNameTest() throws Exception {
+        List<Employee[]> results = runConcurrently(() -> client.get()
+                .uri("/employees/organization/{organizationName}", "TestO" + ThreadLocalRandom.current().nextInt(5000))
+                .retrieve()
+                .body(Employee[].class));
+
+        assertThat(results).hasSize(ROUNDS).doesNotContainNull();
+    }
+
+    private <T> List<T> runConcurrently(Callable<T> task) throws Exception {
+        long start = System.nanoTime();
+        List<T> results = new ArrayList<>();
+        try (ExecutorService executor = Executors.newFixedThreadPool(CONCURRENCY)) {
+            List<Future<T>> futures = new ArrayList<>();
+            for (int i = 0; i < ROUNDS; i++) {
+                futures.add(executor.submit(task));
+            }
+            for (Future<T> future : futures) {
+                results.add(future.get());
+            }
+        }
+        LOGGER.info("{} requests with concurrency {} took {} ms", ROUNDS, CONCURRENCY,
+                (System.nanoTime() - start) / 1_000_000);
+        return results;
     }
 }

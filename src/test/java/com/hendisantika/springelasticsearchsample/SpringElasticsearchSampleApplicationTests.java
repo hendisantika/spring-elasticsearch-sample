@@ -1,10 +1,8 @@
 package com.hendisantika.springelasticsearchsample;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
-class SpringElasticsearchSampleApplicationTests {
+class SpringElasticsearchSampleApplicationTests extends AbstractElasticsearchContainerTest {
 
 	@Test
 	void contextLoads() {
